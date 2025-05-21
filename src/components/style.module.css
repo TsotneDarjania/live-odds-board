@@ -1,0 +1,85 @@
+.match-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 4fr;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #333;
+  background-color: #181818;
+  font-size: 14px;
+  color: #f0f0f0;
+  gap: 12px;
+}
+
+.teams {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.teams img {
+  width: 20px;
+  height: 20px;
+}
+
+.match-info {
+  text-align: center;
+  font-size: 13px;
+  color: #ccc;
+}
+
+.odds-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 8px;
+}
+
+.button {
+  padding: 6px 10px;
+  font-size: 14px;
+  background-color: #2a2a2a;
+  color: #fff;
+  border: 1px solid #3a3a3a;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.button:hover {
+  transform: scale(1.02);
+}
+
+.selected {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: white;
+}
+
+.odds-up {
+  animation: flash-green 0.5s ease-out;
+}
+
+.odds-down {
+  animation: flash-red 0.5s ease-out;
+}
+
+@keyframes flash-green {
+  0% {
+    background-color: #3d8b3d;
+    color: #fff;
+  }
+  100% {
+    background-color: #2a2a2a;
+    color: #fff;
+  }
+}
+
+@keyframes flash-red {
+  0% {
+    background-color: #a94442;
+    color: #fff;
+  }
+  100% {
+    background-color: #2a2a2a;
+    color: #fff;
+  }
+}
