@@ -54,11 +54,14 @@
   color: white;
 }
 
+/* ✅ Animation classes */
 .odds-up {
+  animation: none;
   animation: flash-green 0.5s ease-out;
 }
 
 .odds-down {
+  animation: none;
   animation: flash-red 0.5s ease-out;
 }
 

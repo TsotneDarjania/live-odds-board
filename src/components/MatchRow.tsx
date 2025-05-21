@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import { useEffect, useState } from "react";
 import type { Match } from "../types/match";
 import style from "./style.module.css";
 
@@ -8,43 +8,62 @@ type Props = {
   selectedOdds?: { [key: string]: boolean };
 };
 
-function MatchRow({ match, onSelect, selectedOdds }: Props) {
-  const prevOddsRef = useRef<Partial<Match["odds"]>>({});
-  const prevOdds = prevOddsRef.current;
+const previousOddsMap = new Map<number, Match["odds"]>();
+
+export default function MatchRow({ match, onSelect, selectedOdds }: Props) {
   const currentOdds = match.odds;
+  const prevOdds = (previousOddsMap.get(match.id) || {}) as Partial<
+    Match["odds"]
+  >;
+
+  const [flashMap, setFlashMap] = useState<Record<string, string>>({});
+
+  // Update after render
+  useEffect(() => {
+    previousOddsMap.set(match.id, { ...currentOdds });
+  }, [currentOdds, match.id]);
 
   const oddsButtons = Object.entries(currentOdds).map(([key, value]) => {
     const compoundKey = `${match.id}-${key}`;
     const isSelected = selectedOdds?.[compoundKey];
-
-    const prev = prevOdds?.[key as keyof Match["odds"]];
+    const prev = prevOdds[key as keyof Match["odds"]];
     const isUp = prev !== undefined && value > prev;
     const isDown = prev !== undefined && value < prev;
+    const flashKey = `${match.id}-${key}`;
+
+    // Trigger flash effect on odds change
+    useEffect(() => {
+      if (isUp || isDown) {
+        const classToApply = isUp ? style["odds-up"] : style["odds-down"];
+
+        setFlashMap((prev) => ({
+          ...prev,
+          [flashKey]: classToApply,
+        }));
+
+        const timeout = setTimeout(() => {
+          setFlashMap((prev) => {
+            const updated = { ...prev };
+            delete updated[flashKey];
+            return updated;
+          });
+        }, 500); // Match animation duration
+
+        return () => clearTimeout(timeout);
+      }
+    }, [value]);
 
     const btnClass = [
       style.button,
       isSelected ? style.selected : "",
-      isUp ? style["odds-up"] : "",
-      isDown ? style["odds-down"] : "",
+      flashMap[flashKey] || "",
     ]
       .filter(Boolean)
       .join(" ");
 
-    console.log(
-      key,
-      "prev:",
-      prev,
-      "current:",
-      value,
-      "isUp:",
-      isUp,
-      "isDown:",
-      isDown
-    );
-
     return (
       <button
-        key={`${key}-${value}`} // <- this forces re-creation so CSS animation can trigger
+        key={compoundKey}
         onClick={() => onSelect?.(match.id, key as keyof Match["odds"])}
         className={btnClass}
       >
@@ -53,16 +72,12 @@ function MatchRow({ match, onSelect, selectedOdds }: Props) {
     );
   });
 
-  // update after render
-  prevOddsRef.current = currentOdds;
-
   return (
     <div className={style["match-row"]}>
       <div className={style["teams"]}>
         <img
           src={`/icons/${match.sport.toLowerCase()}.svg`}
           alt={match.sport}
-          title={match.sport}
         />
         <span>
           {match.home} vs {match.away}
@@ -78,5 +93,3 @@ function MatchRow({ match, onSelect, selectedOdds }: Props) {
     </div>
   );
 }
-
-export default MatchRow;

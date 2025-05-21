@@ -4,7 +4,6 @@ import { generateMatches } from "./mockData/generateMatches";
 import { startMockWebSocket } from "./mockData/mockWebSocket";
 import { FixedSizeList as List } from "react-window";
 
-import { useOddsHighlight } from "./hooks/useOddsHighlight";
 import { isSameMatch } from "./helper";
 import "./App.css";
 import RowRenderer from "./components/RowRenderer";
@@ -19,8 +18,6 @@ function App() {
   );
   const listRef = useRef<any>(null);
   const matchRef = useRef<Match[]>([]);
-
-  const oddsHighlight = useOddsHighlight(matches);
 
   useEffect(() => {
     const savedSelections = localStorage.getItem("selectedOdds");
@@ -85,7 +82,7 @@ function App() {
       selectedOdds,
       handleSelect,
     }),
-    [matches, selectedOdds, oddsHighlight]
+    [matches, selectedOdds]
   );
 
   return (

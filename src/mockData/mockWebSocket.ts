@@ -15,8 +15,8 @@ export function startMockWebSocket(
     };
 
     const updatedMatches = matches.map((match) => {
-      // 🚫 Skip 98% of matches for performance
-      if (Math.random() > 0.02) return match;
+      // 50% of matches may update
+      if (Math.random() > 0.5) return match;
 
       const [homeGoals, awayGoals] = match.score.split(" - ").map(Number);
 
@@ -50,8 +50,8 @@ export function startMockWebSocket(
       return {
         ...match,
         score: newScore,
-        odds: newOdds,
-        updatedAt: Date.now(), // optional for debugging
+        odds: { ...newOdds }, // ✅ always return new object
+        updatedAt: Date.now(),
       };
     });
 
