@@ -1,80 +1,23 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import type { Match } from "./types/match";
-import { generateMatches } from "./mockData/generateMatches";
-import { startMockWebSocket } from "./mockData/mockWebSocket";
+import { useRef } from "react";
 import { VariableSizeList as List } from "react-window";
 
-import { isSameMatch } from "./helper";
+import RowRenderer from "./components/rowRenderer/RowRenderer";
 import "./App.css";
-import RowRenderer from "./components/RowRenderer";
+
+import { useSelectedOdds } from "./hooks/useSelectedOdds";
+import { usePreservedScroll } from "./hooks/usePreservedScroll";
+import { useMatches } from "./hooks/useMatches";
 
 const MATCH_COUNT = 10000;
 
 function App() {
-  const [matches, setMatches] = useState<Match[]>([]);
-  const [selectedOdds, setSelectedOdds] = useState<{ [key: string]: boolean }>(
-    {}
-  );
   const listRef = useRef<any>(null);
-  const matchRef = useRef<Match[]>([]);
   const sizeMap = useRef<{ [index: number]: number }>({});
 
-  useEffect(() => {
-    const savedSelections = localStorage.getItem("selectedOdds");
-    const savedScroll = localStorage.getItem("scrollOffset");
-    const data = generateMatches(MATCH_COUNT);
-    setMatches(data);
-    matchRef.current = data;
+  const matches = useMatches(MATCH_COUNT);
+  const [selectedOdds, handleSelect] = useSelectedOdds();
 
-    if (savedSelections) {
-      setSelectedOdds(JSON.parse(savedSelections));
-    }
-
-    setTimeout(() => {
-      if (savedScroll && listRef.current) {
-        listRef.current.scrollTo(parseInt(savedScroll));
-      }
-    }, 100);
-  }, []);
-
-  useEffect(() => {
-    matchRef.current = matches;
-  }, [matches]);
-
-  useEffect(() => {
-    startMockWebSocket(
-      () => matchRef.current,
-      (updatedMatches) => {
-        setMatches((prevMatches) =>
-          prevMatches.map((match, i) =>
-            isSameMatch(match, updatedMatches[i]) ? match : updatedMatches[i]
-          )
-        );
-      }
-    );
-  }, []);
-
-  useEffect(() => {
-    const saveScroll = () => {
-      if (listRef.current) {
-        localStorage.setItem(
-          "scrollOffset",
-          listRef.current.state.scrollOffset.toString()
-        );
-      }
-    };
-    window.addEventListener("beforeunload", saveScroll);
-    return () => window.removeEventListener("beforeunload", saveScroll);
-  }, []);
-
-  const handleSelect = (matchId: number, betKey: keyof Match["odds"]) => {
-    const key = `${matchId}-${betKey}`;
-    setSelectedOdds((prev) => {
-      const updated = { ...prev, [key]: !prev[key] };
-      localStorage.setItem("selectedOdds", JSON.stringify(updated));
-      return updated;
-    });
-  };
+  usePreservedScroll(listRef);
 
   const setSize = (index: number, size: number) => {
     if (sizeMap.current[index] !== size) {
@@ -87,16 +30,6 @@ function App() {
     return sizeMap.current[index] || 120; // fallback default height
   };
 
-  const itemData = useMemo(
-    () => ({
-      matches,
-      selectedOdds,
-      handleSelect,
-      setSize,
-    }),
-    [matches, selectedOdds]
-  );
-
   return (
     <div className="app">
       <h1 className="custom-font-1">LIVE ODDS BOARD</h1>
@@ -107,7 +40,12 @@ function App() {
         itemSize={getSize}
         width="100%"
         ref={listRef}
-        itemData={itemData}
+        itemData={{
+          matches,
+          selectedOdds,
+          handleSelect,
+          setSize,
+        }}
       >
         {RowRenderer}
       </List>

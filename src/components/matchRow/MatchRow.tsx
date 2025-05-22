@@ -1,6 +1,7 @@
-import type { Match } from "../types/match";
-import MatchOddButton from "./oddButton/OddButton";
-import style from "./style.module.css";
+import React from "react";
+import type { Match } from "../../types/match";
+import MatchOddButton from "../oddButton/OddButton";
+import style from "../rowRenderer/style.module.css";
 
 type Props = {
   match: Match;
@@ -9,12 +10,7 @@ type Props = {
   isOddRow: boolean;
 };
 
-export default function MatchRow({
-  match,
-  onSelect,
-  selectedOdds,
-  isOddRow,
-}: Props) {
+function MatchRow({ match, onSelect, selectedOdds, isOddRow }: Props) {
   return (
     <div
       className={`${style["match-row"]} ${
@@ -56,3 +52,32 @@ export default function MatchRow({
     </div>
   );
 }
+
+function shallowCompareSelectedOdds(
+  prev: { [key: string]: boolean } = {},
+  next: { [key: string]: boolean } = {},
+  matchId: number
+) {
+  const prefix = `${matchId}-`;
+  const allKeys = new Set([
+    ...Object.keys(prev).filter((k) => k.startsWith(prefix)),
+    ...Object.keys(next).filter((k) => k.startsWith(prefix)),
+  ]);
+
+  for (const key of allKeys) {
+    if (prev[key] !== next[key]) return false;
+  }
+  return true;
+}
+
+// ✅ Export wrapped with memo and custom comparison
+export default React.memo(MatchRow, (prev, next) => {
+  const sameMatch = prev.match === next.match;
+  const sameRow = prev.isOddRow === next.isOddRow;
+  const sameOdds = shallowCompareSelectedOdds(
+    prev.selectedOdds,
+    next.selectedOdds,
+    prev.match.id
+  );
+  return sameMatch && sameRow && sameOdds;
+});

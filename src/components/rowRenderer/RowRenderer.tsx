@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
-import MatchRow from "./MatchRow";
-import type { Match } from "../types/match";
+import MatchRow from "../matchRow/MatchRow";
+import type { Match } from "../../types/match";
 
 type Props = {
   index: number;
@@ -32,7 +32,7 @@ export default function RowRenderer({ index, style, data }: Props) {
   if (!match) return null;
 
   return (
-    <div style={style} key={match.id}>
+    <div style={style}>
       <div className="match-row-wrapper" ref={rowRef}>
         <MatchRow
           match={match}

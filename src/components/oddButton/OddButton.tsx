@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import style from "./style.module.css";
 
 type Props = {
@@ -9,59 +9,56 @@ type Props = {
   onSelect?: () => void;
 };
 
-const previousOddsMap = new Map<string, number>();
-
 export default function MatchOddButton({
-  matchId,
   keyName,
   value,
   isSelected,
   onSelect,
 }: Props) {
-  const compoundKey = `${matchId}-${keyName}`;
   const [flashClass, setFlashClass] = useState<string | null>(null);
   const [delta, setDelta] = useState<number | null>(null);
-
-  const prev = previousOddsMap.get(compoundKey);
-  const isUp = prev !== undefined && value > prev;
-  const isDown = prev !== undefined && value < prev;
+  const prevValueRef = useRef<number | null>(null);
+  const hasMountedRef = useRef(false);
 
   useEffect(() => {
-    previousOddsMap.set(compoundKey, value);
+    const prev = prevValueRef.current;
+    const isUp = prev !== null && value > prev;
+    const isDown = prev !== null && value < prev;
 
-    if (isUp || isDown) {
-      const diff = +(value - (prev ?? 0)).toFixed(2);
+    if (hasMountedRef.current && (isUp || isDown)) {
+      const diff = +(value - prev!).toFixed(2);
       setDelta(diff);
-
       setFlashClass(isUp ? style["odds-up"] : style["odds-down"]);
 
       const timeout = setTimeout(() => {
         setFlashClass(null);
         setDelta(null);
-      }, 1500);
+      }, 1000);
 
       return () => clearTimeout(timeout);
     }
+
+    prevValueRef.current = value;
+    hasMountedRef.current = true;
   }, [value]);
 
-  const btnClass = [
-    style.button,
-    isSelected ? style.selected : "",
-    flashClass || "",
-  ]
-    .filter(Boolean)
-    .join(" ");
-
   return (
-    <button className={btnClass + " custom-font-1"} onClick={onSelect}>
-      <span className={style["key-name"]}>{`(${keyName})`}</span>:{" "}
-      {value.toFixed(2)}
-      {delta !== null && (
-        <span className={delta > 0 ? style.diffUp : style.diffDown}>
-          &nbsp;({delta > 0 ? "+" : ""}
-          {delta.toFixed(2)})
-        </span>
-      )}
+    <button
+      className={`${style.button} ${
+        isSelected ? style.selected : ""
+      } custom-font-1`}
+      onClick={onSelect}
+    >
+      <div className={`${style.inner} ${flashClass ?? ""}`}>
+        <span className={style["key-name"]}>{`(${keyName})`}</span>:{" "}
+        {value.toFixed(2)}
+        {delta !== null && (
+          <span className={delta > 0 ? style.diffUp : style.diffDown}>
+            &nbsp;({delta > 0 ? "+" : ""}
+            {delta.toFixed(2)})
+          </span>
+        )}
+      </div>
     </button>
   );
 }
