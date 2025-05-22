@@ -2,14 +2,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { Match } from "./types/match";
 import { generateMatches } from "./mockData/generateMatches";
 import { startMockWebSocket } from "./mockData/mockWebSocket";
-import { FixedSizeList as List } from "react-window";
+import { VariableSizeList as List } from "react-window";
 
 import { isSameMatch } from "./helper";
 import "./App.css";
 import RowRenderer from "./components/RowRenderer";
 
 const MATCH_COUNT = 10000;
-const ROW_HEIGHT = 60;
 
 function App() {
   const [matches, setMatches] = useState<Match[]>([]);
@@ -18,6 +17,7 @@ function App() {
   );
   const listRef = useRef<any>(null);
   const matchRef = useRef<Match[]>([]);
+  const sizeMap = useRef<{ [index: number]: number }>({});
 
   useEffect(() => {
     const savedSelections = localStorage.getItem("selectedOdds");
@@ -76,11 +76,23 @@ function App() {
     });
   };
 
+  const setSize = (index: number, size: number) => {
+    if (sizeMap.current[index] !== size) {
+      sizeMap.current = { ...sizeMap.current, [index]: size };
+      listRef.current?.resetAfterIndex(index);
+    }
+  };
+
+  const getSize = (index: number) => {
+    return sizeMap.current[index] || 120; // fallback default height
+  };
+
   const itemData = useMemo(
     () => ({
       matches,
       selectedOdds,
       handleSelect,
+      setSize,
     }),
     [matches, selectedOdds]
   );
@@ -90,9 +102,9 @@ function App() {
       <h1>Live Odds Board</h1>
       <List
         className="react-window-list"
-        height={window.innerHeight - 60}
+        height={window.innerHeight - 120}
         itemCount={matches.length}
-        itemSize={ROW_HEIGHT}
+        itemSize={getSize}
         width="100%"
         ref={listRef}
         itemData={itemData}

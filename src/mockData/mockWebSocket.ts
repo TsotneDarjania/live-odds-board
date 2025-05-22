@@ -15,16 +15,15 @@ export function startMockWebSocket(
     };
 
     const updatedMatches = matches.map((match) => {
-      // 50% of matches may update
-      if (Math.random() > 0.5) return match;
+      // Only 50% of matches update
+      if (Math.random() > 0.1) return match;
 
       const [homeGoals, awayGoals] = match.score.split(" - ").map(Number);
 
       let newHome = homeGoals;
       let newAway = awayGoals;
 
-      const willChangeScore = Math.random() < 0.5;
-
+      const willChangeScore = true;
       if (willChangeScore) {
         if (Math.random() < 0.5) newHome += 1;
         else newAway += 1;
@@ -32,25 +31,20 @@ export function startMockWebSocket(
 
       const newScore = `${newHome} - ${newAway}`;
 
-      const shouldUpdateOdds = willChangeScore;
+      // ✅ Randomly update a few odds
+      const updatedOdds: Match["odds"] = { ...match.odds };
+      const oddKeys = Object.keys(updatedOdds) as (keyof Match["odds"])[];
 
-      const newOdds = shouldUpdateOdds
-        ? {
-            "1": adjust(match.odds["1"]),
-            X: adjust(match.odds["X"]),
-            "2": adjust(match.odds["2"]),
-            "1X": adjust(match.odds["1X"]),
-            "12": adjust(match.odds["12"]),
-            X2: adjust(match.odds["X2"]),
-            "Over 2.5": adjust(match.odds["Over 2.5"]),
-            "Under 2.5": adjust(match.odds["Under 2.5"]),
-          }
-        : match.odds;
+      oddKeys.forEach((key) => {
+        if (Math.random() < 0.3) {
+          updatedOdds[key] = adjust(updatedOdds[key]);
+        }
+      });
 
       return {
         ...match,
         score: newScore,
-        odds: { ...newOdds }, // ✅ always return new object
+        odds: updatedOdds,
         updatedAt: Date.now(),
       };
     });

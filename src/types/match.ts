@@ -18,7 +18,7 @@ export type Match = {
     "1X": number;
     "12": number;
     X2: number;
-    "Over 2.5": number;
-    "Under 2.5": number;
+    "> 2.5": number;
+    "< 2.5": number;
   };
 };

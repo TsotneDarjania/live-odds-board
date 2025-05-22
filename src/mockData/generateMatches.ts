@@ -28,8 +28,8 @@ export function generateMatches(count: number = 10000): Match[] {
       "1X": getRandomOdd(),
       "12": getRandomOdd(),
       X2: getRandomOdd(),
-      "Over 2.5": getRandomOdd(),
-      "Under 2.5": getRandomOdd(),
+      "> 2.5": getRandomOdd(),
+      "< 2.5": getRandomOdd(),
     },
   }));
 }
