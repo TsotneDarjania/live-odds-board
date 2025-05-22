@@ -14,7 +14,7 @@ function getRandomOdd(): number {
 export function generateMatches(count: number = 10000): Match[] {
   return Array.from({ length: count }, (_, id) => ({
     id,
-    sport: sports[id % sports.length],
+    sport: sports[Math.floor(Math.random() * sports.length)],
     home: getRandomTeam(),
     away: getRandomTeam(),
     startTime: new Date(Date.now() + id * 60000).toLocaleTimeString(),

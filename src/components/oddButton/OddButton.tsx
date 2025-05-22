@@ -53,8 +53,9 @@ export default function MatchOddButton({
     .join(" ");
 
   return (
-    <button className={btnClass} onClick={onSelect}>
-      {keyName}: {value.toFixed(2)}
+    <button className={btnClass + " custom-font-1"} onClick={onSelect}>
+      <span className={style["key-name"]}>{`(${keyName})`}</span>:{" "}
+      {value.toFixed(2)}
       {delta !== null && (
         <span className={delta > 0 ? style.diffUp : style.diffDown}>
           &nbsp;({delta > 0 ? "+" : ""}

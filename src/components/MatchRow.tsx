@@ -17,14 +17,11 @@ export default function MatchRow({
 }: Props) {
   return (
     <div
-      style={{
-        backgroundColor: isOddRow ? "#202020" : "#2a2a2a", // alternating colors
-        padding: "16px",
-        borderBottom: "1px solid #333",
-      }}
-      className={style["match-row"]}
+      className={`${style["match-row"]} ${
+        isOddRow ? style["odd"] : style["even"]
+      }`}
     >
-      <div className={style["teams"]}>
+      <div className={style["teams"] + " custom-font-1"}>
         <img
           src={`/icons/${match.sport.toLowerCase()}.svg`}
           alt={match.sport}
@@ -34,9 +31,9 @@ export default function MatchRow({
         </span>
       </div>
 
-      <div className={style["match-info"]}>
-        <div>{match.startTime}</div>
-        <div>{match.score}</div>
+      <div className={style["match-info"] + " custom-font-1"}>
+        <div className={style["match-time"]}>{match.startTime}</div>
+        <div className={style["match-score"]}>{match.score}</div>
       </div>
 
       <div className={style["odds-group"]}>

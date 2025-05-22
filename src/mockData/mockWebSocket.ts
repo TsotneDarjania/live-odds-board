@@ -16,18 +16,15 @@ export function startMockWebSocket(
 
     const updatedMatches = matches.map((match) => {
       // Only 50% of matches update
-      if (Math.random() > 0.1) return match;
+      if (Math.random() > 0.05) return match;
 
       const [homeGoals, awayGoals] = match.score.split(" - ").map(Number);
 
       let newHome = homeGoals;
       let newAway = awayGoals;
 
-      const willChangeScore = true;
-      if (willChangeScore) {
-        if (Math.random() < 0.5) newHome += 1;
-        else newAway += 1;
-      }
+      if (Math.random() < 0.5) newHome += 1;
+      else newAway += 1;
 
       const newScore = `${newHome} - ${newAway}`;
 

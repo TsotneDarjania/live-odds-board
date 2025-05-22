@@ -13,7 +13,7 @@ type Props = {
   };
 };
 
-function RowRenderer({ index, style, data }: Props) {
+export default function RowRenderer({ index, style, data }: Props) {
   const match = data.matches[index];
   const rowRef = useRef<HTMLDivElement>(null);
 
@@ -33,7 +33,7 @@ function RowRenderer({ index, style, data }: Props) {
 
   return (
     <div style={style} key={match.id}>
-      <div ref={rowRef}>
+      <div className="match-row-wrapper" ref={rowRef}>
         <MatchRow
           match={match}
           onSelect={data.handleSelect}
@@ -44,5 +44,3 @@ function RowRenderer({ index, style, data }: Props) {
     </div>
   );
 }
-
-export default RowRenderer;

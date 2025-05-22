@@ -99,7 +99,7 @@ function App() {
 
   return (
     <div className="app">
-      <h1>Live Odds Board</h1>
+      <h1 className="custom-font-1">LIVE ODDS BOARD</h1>
       <List
         className="react-window-list"
         height={window.innerHeight - 120}

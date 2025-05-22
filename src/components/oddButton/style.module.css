@@ -1,15 +1,16 @@
 /* ✅ Odd button styles */
 .button {
-  padding: 8px 12px;
   height: 40px;
-  font-size: 17px;
-  background-color: #2a2a2a;
+  font-size: 16px;
+  background: none;
   color: #fff;
   border: 1px solid #3a3a3a;
   border-radius: 6px;
   cursor: pointer;
   transition: background-color 0.2s ease, transform 0.2s ease;
   text-align: center;
+
+  outline: none !important;
 }
 
 .button:hover {
@@ -41,7 +42,7 @@
     background-color: #3d8b3d;
   }
   100% {
-    background-color: #2a2a2a;
+    background-color: #2a2a2a00;
     color: #fff;
   }
 }
@@ -54,7 +55,7 @@
     background-color: #a94442;
   }
   100% {
-    background-color: #2a2a2a;
+    background-color: #2a2a2a00;
     color: #fff;
   }
 }
@@ -62,12 +63,16 @@
 /* ✅ Inline difference indicators */
 .diffUp {
   color: #3d8b3d;
-  font-size: 0.95em;
+  font-size: 0.8em;
   margin-left: 6px;
 }
 
 .diffDown {
   color: #dd1a17;
-  font-size: 0.95em;
+  font-size: 0.8em;
   margin-left: 6px;
+}
+
+.key-name {
+  color: #6fecff;
 }
