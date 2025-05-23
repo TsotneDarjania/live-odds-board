@@ -70,7 +70,6 @@ function shallowCompareSelectedOdds(
   return true;
 }
 
-// ✅ Export wrapped with memo and custom comparison
 export default React.memo(MatchRow, (prev, next) => {
   const sameMatch = prev.match === next.match;
   const sameRow = prev.isOddRow === next.isOddRow;

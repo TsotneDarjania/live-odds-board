@@ -27,7 +27,7 @@ function App() {
   };
 
   const getSize = (index: number) => {
-    return sizeMap.current[index] || 120; // fallback default height
+    return sizeMap.current[index] || 120;
   };
 
   return (
